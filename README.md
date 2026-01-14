@@ -13,7 +13,7 @@ The visualization is designed for **teaching, presentations, and intuitive expla
 ## 🌐 Live Demo
 
 👉 **View the interactive animation here:**  
-https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME/
+[https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME/](https://tashinorbu544.github.io/mcmc-animation/)
 
 (Replace `YOUR_GITHUB_USERNAME` and `YOUR_REPOSITORY_NAME` with your actual values.)
 
