@@ -5,9 +5,7 @@ let positions = [];
 let step = 0;
 let running = false;
 let position = 2; // start in middle room
-let visitCounts = Array(n_rooms).fill(0); // track visits
 
-// Precompute positions using MCMC
 function precomputePositions() {
   positions = [];
   let current = position;
@@ -24,32 +22,9 @@ function precomputePositions() {
 
 precomputePositions();
 
-// Chart.js setup
-let ctx = document.getElementById('resultChart').getContext('2d');
-let resultChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: rooms.map((_,i)=>`Room ${i+1}`),
-        datasets: [{
-            label: 'Visits',
-            data: Array(n_rooms).fill(0),
-            backgroundColor: 'lightblue',
-            borderColor: 'black',
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: false,
-        animation: false,
-        scales: {
-            y: { beginAtZero: true, title: { display: true, text: 'Number of Visits' } }
-        }
-    }
-});
-
 function setup() {
-  createCanvas(600, 300);
-  frameRate(10);
+  createCanvas(700, 400);
+  frameRate(20);
   drawFrame(0);
 }
 
@@ -58,59 +33,51 @@ function draw() {
     drawFrame(step);
     step++;
     document.getElementById("stepSlider").value = step;
-    updateChart(step);
   }
 }
 
-// Draw animation frame
+// Draw animation + wiggle
 function drawFrame(frame){
   background(255);
 
-  let barWidth = width / n_rooms;
+  let roomWidth = width / n_rooms;
 
-  // Draw rooms as bars
+  // Draw rooms as light gray bars
   for(let i = 0; i < n_rooms; i++){
-    fill('lightgray');
-    stroke(0);
-    rect(i*barWidth, height - rooms[i]*height, barWidth-2, rooms[i]*height);
+    fill(230);
+    stroke(180);
+    rect(i*roomWidth, 0, roomWidth, height);
   }
 
-  // Draw person
-  fill('red');
-  noStroke();
-  let px = positions[frame]*barWidth + barWidth/2;
-  let py = height - rooms[positions[frame]]*height - 10;
-  ellipse(px, py, 20, 20);
-}
+  // Draw wiggle trace at bottom
+  stroke('red');
+  strokeWeight(2);
+  noFill();
+  beginShape();
+  for(let i = 0; i <= frame; i++){
+    let x = map(i, 0, steps-1, 0, width);
+    let y = map(positions[i], 0, n_rooms-1, height-50, 50); // wiggle vertically
+    vertex(x, y);
+  }
+  endShape();
 
-// Update chart data
-function updateChart(frame){
-  visitCounts[positions[frame]]++;
-  resultChart.data.datasets[0].data = visitCounts;
-  resultChart.update();
+  // Draw current position as red dot
+  fill('blue');
+  noStroke();
+  let px = map(frame, 0, steps-1, 0, width);
+  let py = map(positions[frame], 0, n_rooms-1, height-50, 50);
+  ellipse(px, py, 12, 12);
 }
 
 // Buttons
 function play(){ running = true; }
 function pause(){ running = false; }
-function reset(){ 
-  step = 0; 
-  visitCounts = Array(n_rooms).fill(0); 
-  drawFrame(0); 
-  resultChart.data.datasets[0].data = visitCounts; 
-  resultChart.update();
-}
+function reset(){ step = 0; drawFrame(0); document.getElementById("stepSlider").value = 0; }
 
 // Slider
 let slider = document.getElementById("stepSlider");
 slider.oninput = function(){
   step = parseInt(this.value);
-  visitCounts = Array(n_rooms).fill(0);
-  for(let i=0;i<=step;i++){
-    visitCounts[positions[i]]++;
-  }
   drawFrame(step);
-  resultChart.data.datasets[0].data = visitCounts;
-  resultChart.update();
 }
 
