@@ -5,8 +5,9 @@ let positions = [];
 let step = 0;
 let running = false;
 let position = 2; // start in middle room
+let visitCounts = Array(n_rooms).fill(0); // track visits
 
-// Precompute positions using MCMC logic
+// Precompute positions using MCMC
 function precomputePositions() {
   positions = [];
   let current = position;
@@ -23,6 +24,29 @@ function precomputePositions() {
 
 precomputePositions();
 
+// Chart.js setup
+let ctx = document.getElementById('resultChart').getContext('2d');
+let resultChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: rooms.map((_,i)=>`Room ${i+1}`),
+        datasets: [{
+            label: 'Visits',
+            data: Array(n_rooms).fill(0),
+            backgroundColor: 'lightblue',
+            borderColor: 'black',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: false,
+        animation: false,
+        scales: {
+            y: { beginAtZero: true, title: { display: true, text: 'Number of Visits' } }
+        }
+    }
+});
+
 function setup() {
   createCanvas(600, 300);
   frameRate(10);
@@ -34,14 +58,17 @@ function draw() {
     drawFrame(step);
     step++;
     document.getElementById("stepSlider").value = step;
+    updateChart(step);
   }
 }
 
+// Draw animation frame
 function drawFrame(frame){
   background(255);
 
-  // Draw rooms as bars
   let barWidth = width / n_rooms;
+
+  // Draw rooms as bars
   for(let i = 0; i < n_rooms; i++){
     fill('lightgray');
     stroke(0);
@@ -56,14 +83,34 @@ function drawFrame(frame){
   ellipse(px, py, 20, 20);
 }
 
+// Update chart data
+function updateChart(frame){
+  visitCounts[positions[frame]]++;
+  resultChart.data.datasets[0].data = visitCounts;
+  resultChart.update();
+}
+
 // Buttons
 function play(){ running = true; }
 function pause(){ running = false; }
-function reset(){ step = 0; drawFrame(0); document.getElementById("stepSlider").value = 0; }
+function reset(){ 
+  step = 0; 
+  visitCounts = Array(n_rooms).fill(0); 
+  drawFrame(0); 
+  resultChart.data.datasets[0].data = visitCounts; 
+  resultChart.update();
+}
 
-// Optional: link slider
+// Slider
 let slider = document.getElementById("stepSlider");
 slider.oninput = function(){
   step = parseInt(this.value);
+  visitCounts = Array(n_rooms).fill(0);
+  for(let i=0;i<=step;i++){
+    visitCounts[positions[i]]++;
+  }
   drawFrame(step);
+  resultChart.data.datasets[0].data = visitCounts;
+  resultChart.update();
 }
+
