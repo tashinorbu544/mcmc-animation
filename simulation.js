@@ -62,23 +62,49 @@ function drawRooms(h, frame) {
   let w = width;
   let roomW = w / n_rooms;
 
-  // Rooms
-  for (let i = 0; i < n_rooms; i++) {
-    fill(230);
-    stroke(150);
-    rect(i * roomW, 0, roomW, h);
+  // Scale room heights
+  let maxProb = Math.max(...rooms);
 
-    fill(80);
+  for (let i = 0; i < n_rooms; i++) {
+    let barH = map(rooms[i], 0, maxProb, 20, h - 40);
+
+    // Room bar
+    fill(220);
+    stroke(120);
+    rect(
+      i * roomW,
+      h - barH,
+      roomW - 4,
+      barH
+    );
+
+    // Room label
+    fill(60);
     noStroke();
     textAlign(CENTER);
-    text(`Room ${i + 1}`, i * roomW + roomW / 2, h - 10);
+    text(
+      `Room ${i + 1}`,
+      i * roomW + roomW / 2,
+      h - 5
+    );
   }
 
-  // Person
+  // Person on top of current room
+  let currentRoom = positions[frame];
+  let personX = currentRoom * roomW + roomW / 2;
+  let personY =
+    h -
+    map(rooms[currentRoom], 0, maxProb, 20, h - 40) -
+    10;
+
   fill("red");
   noStroke();
-  let x = positions[frame] * roomW + roomW / 2;
-  ellipse(x, h / 2, 20, 20);
+  ellipse(personX, personY, 18, 18);
+
+  // Title
+  fill(50);
+  textAlign(CENTER);
+  text("Room sizes (target distribution)", width / 2, 15);
 }
 
 // --------- BOTTOM LEFT: Wiggle ---------
