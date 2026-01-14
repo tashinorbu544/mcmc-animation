@@ -27,6 +27,14 @@
       font-size: 1.8rem;
     }
 
+    .subtitle {
+      font-size: 1rem;
+      color: #555;
+      margin-top: 5px;
+      max-width: 800px;
+      text-align: center;
+    }
+
     #controls {
       display: flex;
       align-items: center;
@@ -59,12 +67,25 @@
       box-shadow: 0 6px 18px rgba(0,0,0,0.12);
       background: white;
     }
+
+    .legend {
+      margin-top: 15px;
+      font-size: 0.9rem;
+      color: #444;
+      max-width: 850px;
+      text-align: center;
+    }
   </style>
 </head>
 
 <body>
 
   <h1>MCMC: Person Visiting Rooms (1D)</h1>
+
+  <div class="subtitle">
+    Room height represents the target probability.  
+    The person moves according to a Metropolis–Hastings MCMC rule.
+  </div>
 
   <div id="controls">
     <button onclick="play()">▶ Play</button>
@@ -78,6 +99,15 @@
 
   <div id="animationContainer"></div>
 
+  <div class="legend">
+    <strong>Top:</strong> Room sizes (target distribution) with current state (red dot)  
+    &nbsp;|&nbsp;
+    <strong>Bottom-left:</strong> MCMC trajectory (wiggle)  
+    &nbsp;|&nbsp;
+    <strong>Bottom-right:</strong> Empirical visit frequency (result)
+  </div>
+
   <script src="simulation.js"></script>
 </body>
 </html>
+
