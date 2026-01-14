@@ -1,111 +1,69 @@
-let person;
+let rooms = [0.05, 0.15, 0.4, 0.1, 0.15];
+let n_rooms = rooms.length;
+let steps = 300;
+let positions = [];
 let step = 0;
-let stepsPerRoom = 50;  // number of steps person spends in a room
 let running = false;
-let trace = [];
-let currentRoomIndex = 0;
-let movingToNextRoom = false; // flag for transition
+let position = 2; // start in middle room
 
-// Rooms arranged in a line
-let roomSizes = [
-  {x: 50, y: 150, width: 100, height: 100},  // small
-  {x: 200, y: 100, width: 150, height: 150}, // medium
-  {x: 400, y: 50, width: 200, height: 200}   // large
-];
+// Precompute positions using MCMC logic
+function precomputePositions() {
+  positions = [];
+  let current = position;
+  for(let i = 0; i < steps; i++){
+    let proposal = current + (Math.random() < 0.5 ? -1 : 1);
+    proposal = Math.max(0, Math.min(n_rooms - 1, proposal));
+    let accept_ratio = rooms[proposal] / rooms[current];
+    if(Math.random() < Math.min(1, accept_ratio)){
+      current = proposal;
+    }
+    positions.push(current);
+  }
+}
+
+precomputePositions();
 
 function setup() {
-  createCanvas(700, 400);
-  initializePerson();
+  createCanvas(600, 300);
   frameRate(10);
+  drawFrame(0);
 }
 
 function draw() {
-  background(220);
-
-  // Draw all rooms
-  stroke(0);
-  strokeWeight(2);
-  noFill();
-  for(let r of roomSizes){
-    rect(r.x, r.y, r.width, r.height);
+  if(running && step < steps){
+    drawFrame(step);
+    step++;
+    document.getElementById("stepSlider").value = step;
   }
+}
 
-  let room = roomSizes[currentRoomIndex];
+function drawFrame(frame){
+  background(255);
 
-  if(running){
-    if(!movingToNextRoom){
-      // Move person inside current room
-      movePerson(room);
-      step++;
-      if(step >= stepsPerRoom){
-        movingToNextRoom = true; // start transition to next room
-        step = 0;
-      }
-    } else {
-      // Move to center of next room
-      let nextRoomIndex = currentRoomIndex + 1;
-      if(nextRoomIndex < roomSizes.length){
-        let target = createVector(
-          roomSizes[nextRoomIndex].x + roomSizes[nextRoomIndex].width/2,
-          roomSizes[nextRoomIndex].y + roomSizes[nextRoomIndex].height/2
-        );
-        let dir = p5.Vector.sub(target, person);
-        if(dir.mag() < 5){
-          currentRoomIndex = nextRoomIndex;
-          movingToNextRoom = false;
-          step = 0;
-        } else {
-          dir.setMag(5);
-          person.add(dir);
-          trace.push(person.copy());
-        }
-      }
-    }
+  // Draw rooms as bars
+  let barWidth = width / n_rooms;
+  for(let i = 0; i < n_rooms; i++){
+    fill('lightgray');
+    stroke(0);
+    rect(i*barWidth, height - rooms[i]*height, barWidth-2, rooms[i]*height);
   }
-
-  // Draw trace
-  stroke('red');
-  strokeWeight(2);
-  noFill();
-  beginShape();
-  for(let p of trace){
-    vertex(p.x, p.y);
-  }
-  endShape();
 
   // Draw person
-  fill('blue');
+  fill('red');
   noStroke();
-  circle(person.x, person.y, 15);
-}
-
-// Initialize person at center of first room
-function initializePerson(){
-  let firstRoom = roomSizes[0];
-  let centerX = firstRoom.x + firstRoom.width/2;
-  let centerY = firstRoom.y + firstRoom.height/2;
-  person = createVector(centerX, centerY);
-  trace = [person.copy()];
-  currentRoomIndex = 0;
-  step = 0;
-  movingToNextRoom = false;
-}
-
-// Move person randomly inside room (MCMC-style)
-function movePerson(room){
-  let proposal = person.copy().add(p5.Vector.random2D().mult(10));
-  if(proposal.x > room.x && proposal.x < room.x + room.width &&
-     proposal.y > room.y && proposal.y < room.y + room.height){
-       person.set(proposal);
-       trace.push(person.copy());
-  }
+  let px = positions[frame]*barWidth + barWidth/2;
+  let py = height - rooms[positions[frame]]*height - 10;
+  ellipse(px, py, 20, 20);
 }
 
 // Buttons
 function play(){ running = true; }
 function pause(){ running = false; }
-function reset(){
-  running = false;
-  initializePerson();
-}
+function reset(){ step = 0; drawFrame(0); document.getElementById("stepSlider").value = 0; }
 
+// Optional: link slider
+let slider = document.getElementById("stepSlider");
+slider.oninput = function(){
+  step = parseInt(this.value);
+  drawFrame(step);
+}
