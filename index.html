@@ -1,33 +1,104 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>MCMC Rooms Animation</title>
+
+  <!-- p5.js and Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Google Fonts for modern look -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
-    body { display: flex; flex-direction: column; align-items: center; font-family: sans-serif; background: #f5f5f5; }
-    #controls { margin: 10px; }
-    canvas { border: 1px solid black; }
-    button { margin-right: 5px; }
+    /* General styling */
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #333;
+    }
+
+    h1 {
+      margin-top: 30px;
+      font-size: 1.8rem;
+      text-align: center;
+    }
+
+    /* Controls container */
+    #controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #3730a3;
+    }
+
+    input[type=range] {
+      width: 200px;
+    }
+
+    /* Canvas styling */
+    canvas {
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background: white;
+    }
+
+    /* Chart container */
+    #chartContainer {
+      margin-top: 30px;
+      width: 80%;
+      max-width: 700px;
+    }
   </style>
 </head>
+
 <body>
+  <h1>MCMC: Person Visiting Rooms (1D)</h1>
 
-<h2>MCMC: Person Visiting Rooms (1D)</h2>
+  <!-- Controls -->
+  <div id="controls">
+    <button onclick="play()">▶ Play</button>
+    <button onclick="pause()">⏸ Pause</button>
+    <button onclick="reset()">🔄 Reset</button>
+    <label>Step:
+      <input type="range" id="stepSlider" min="0" max="300" value="0">
+    </label>
+  </div>
 
-<div id="controls">
-  <button onclick="play()">▶ Play</button>
-  <button onclick="pause()">⏸ Pause</button>
-  <button onclick="reset()">🔄 Reset</button>
-  Step: <input type="range" id="stepSlider" min="0" max="300" value="0">
-</div>
-<div id="chartContainer">
-  <canvas id="resultChart" width="600" height="200"></canvas>
-</div>
+  <!-- Animation canvas -->
+  <div id="animationContainer">
+    <!-- p5.js will insert canvas here -->
+  </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Result chart -->
+  <div id="chartContainer">
+    <canvas id="resultChart"></canvas>
+  </div>
 
-  
-<script src="simulation.js"></script>
+  <!-- Simulation script -->
+  <script src="simulation.js"></script>
 </body>
 </html>
 
