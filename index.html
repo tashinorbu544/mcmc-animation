@@ -1,35 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>MCMC Person Visiting Rooms</title>
+  <title>MCMC Rooms Animation</title>
   <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
   <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-family: sans-serif;
-      background-color: #f5f5f5;
-    }
-    #controls {
-      margin: 10px;
-    }
-    canvas {
-      border: 1px solid black;
-    }
-    button {
-      margin-right: 5px;
-    }
+    body { display: flex; flex-direction: column; align-items: center; font-family: sans-serif; background: #f5f5f5; }
+    #controls { margin: 10px; }
+    canvas { border: 1px solid black; }
+    button { margin-right: 5px; }
   </style>
 </head>
 <body>
 
-<h2>MCMC Simulation: One Person Visiting Multiple Rooms</h2>
+<h2>MCMC: Person Visiting Rooms (1D)</h2>
 
 <div id="controls">
   <button onclick="play()">▶ Play</button>
   <button onclick="pause()">⏸ Pause</button>
   <button onclick="reset()">🔄 Reset</button>
+  Step: <input type="range" id="stepSlider" min="0" max="300" value="0">
 </div>
 
 <script src="simulation.js"></script>
